@@ -48,7 +48,7 @@ public class TwoDimensionalAnimationControl : MonoBehaviour
         {
             velocityZ -= Time.deltaTime * deceleration;
         }
-       // increase velocityZ
+       // decrease velocityZ
         if (!backPressed && velocityZ < 0.0f)
         {
             velocityZ += Time.deltaTime * deceleration;
@@ -59,7 +59,7 @@ public class TwoDimensionalAnimationControl : MonoBehaviour
             velocityX += Time.deltaTime * deceleration;
         }
         // decrease velocityX if right not pressed and velocityX > 0
-        if (!rightPressed && velocityZ > 0.0f)
+        if (!rightPressed && velocityX > 0.0f)
         {
             velocityX -= Time.deltaTime * deceleration;
         }
@@ -68,13 +68,13 @@ public class TwoDimensionalAnimationControl : MonoBehaviour
     void LockOrChangeVelocity(bool forwardPressed, bool leftPressed, bool rightPressed, bool backPressed, bool runPressed, float currentMaximumVelocity)
     {
         // reset velocityZ
-        if (!forwardPressed && !backPressed && velocityZ < 0.05f && velocityZ > -0.05f)
+        if (!forwardPressed && !backPressed && velocityZ != 0.0f && velocityZ > -0.05f && velocityZ < 0.05f)
         {
             velocityZ = 0.0f;
         }
         
         // reset velocityX
-        if (!leftPressed && !rightPressed && velocityX > -0.05f && velocityX < 0.05f)
+        if (!leftPressed && !rightPressed && velocityX != 0.0f && velocityX > -0.05f && velocityX < 0.05f)
         {
             velocityX = 0.0f;
         }
@@ -115,7 +115,7 @@ public class TwoDimensionalAnimationControl : MonoBehaviour
         }
         else if (backPressed && velocityZ > -currentMaximumVelocity && velocityZ < (-currentMaximumVelocity + 0.05f))
         {
-            velocityZ = currentMaximumVelocity;
+            velocityZ = -currentMaximumVelocity;
         }
          // lock left
         if (leftPressed && runPressed && velocityX < -currentMaximumVelocity)
@@ -168,15 +168,27 @@ public class TwoDimensionalAnimationControl : MonoBehaviour
         bool rightPressed = Input.GetKey(KeyCode.D);
         bool backPressed = Input.GetKey(KeyCode.S);
         bool runPressed = Input.GetKey(KeyCode.LeftShift);
+        bool crouched = Input.GetKey(KeyCode.C);
 
         // set current maxVelocity
         float currentMaximumVelocity = runPressed ? maximumRunVelocity : maximumWalkVelocity;
-
+        if (Input.GetKeyDown(KeyCode.Space)) {
+            if (!animator.GetBool("isCrouched")) {
+                animator.SetTrigger("jump");
+            } else {
+                animator.SetBool("isCrouched", false);
+            }
+        }
+        if (crouched && !animator.GetBool("isCrouched")) {
+            animator.SetBool("isCrouched", true);
+        } else if (crouched && animator.GetBool("isCrouched")) {
+            animator.SetBool("isCrouched", false);
+        }
         ChangeVelocity(forwardPressed, leftPressed, rightPressed, backPressed, runPressed, currentMaximumVelocity);
         LockOrChangeVelocity(forwardPressed, leftPressed, rightPressed, backPressed, runPressed, currentMaximumVelocity);
-
+        
         // set the parameters to our local variable values
-        animator.SetFloat("Velocity Z", velocityZ);
-        animator.SetFloat("Velocity X", velocityX);
+        animator.SetFloat("Yaxis", velocityZ);
+        animator.SetFloat("Xaxis", velocityX);
     }
 }
