@@ -1,10 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class TwoDimensionalAnimationControl : MonoBehaviour
 {
-    Animator animator;
+    public Animator animator;
     float velocityX = 0.0f;
     float velocityZ = 0.0f;
     public float acceleration = 2.0f;
@@ -168,25 +166,14 @@ public class TwoDimensionalAnimationControl : MonoBehaviour
         bool rightPressed = Input.GetKey(KeyCode.D);
         bool backPressed = Input.GetKey(KeyCode.S);
         bool runPressed = Input.GetKey(KeyCode.LeftShift);
-        bool crouched = Input.GetKey(KeyCode.C);
+
 
         // set current maxVelocity
         float currentMaximumVelocity = runPressed ? maximumRunVelocity : maximumWalkVelocity;
-        if (Input.GetKeyDown(KeyCode.Space)) {
-            if (!animator.GetBool("isCrouched")) {
-                animator.SetTrigger("jump");
-            } else {
-                animator.SetBool("isCrouched", false);
-            }
-        }
-        if (crouched && !animator.GetBool("isCrouched")) {
-            animator.SetBool("isCrouched", true);
-        } else if (crouched && animator.GetBool("isCrouched")) {
-            animator.SetBool("isCrouched", false);
-        }
+
         ChangeVelocity(forwardPressed, leftPressed, rightPressed, backPressed, runPressed, currentMaximumVelocity);
         LockOrChangeVelocity(forwardPressed, leftPressed, rightPressed, backPressed, runPressed, currentMaximumVelocity);
-        
+
         // set the parameters to our local variable values
         animator.SetFloat("Yaxis", velocityZ);
         animator.SetFloat("Xaxis", velocityX);
