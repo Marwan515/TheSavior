@@ -693,7 +693,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 758739747}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.14206342, y: 0.011680398, z: -0.0016764789, w: 0.9897872}
+  m_LocalRotation: {x: 0.14206342, y: 0.011680415, z: -0.0016764813, w: 0.9897872}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -981,7 +981,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 973541418}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.124036185, y: 0.011708965, z: -0.0014637415, w: 0.9922075}
+  m_LocalRotation: {x: 0.124036185, y: 0.011708973, z: -0.0014637426, w: 0.9922075}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1666,18 +1666,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3750c9264b7a0cfc8c4873b2aca5c0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerSpeed: 2
-  sprintMultiplier: 3
+  playerSpeed: 1.2
+  sprintMultiplier: 2.1
   boxSize: {x: 1, y: 0.01, z: 1}
   maxDistance: 0.03
   layerMask:
     serializedVersion: 2
     m_Bits: 64
-  jumpForce: 5
-  crouchSpeed: 1
+  jumpForce: 15
+  crouchSpeed: 0.65
   crouchYScale: 0.55
   dashSpeed: 4000
-  cooldownSec: 3
+  cooldownSec: 2
 --- !u!54 &1122086245
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2507,7 +2507,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1723336015}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.124036185, y: 0.01170896, z: -0.0014637408, w: 0.9922075}
+  m_LocalRotation: {x: 0.124036185, y: 0.011708977, z: -0.0014637429, w: 0.9922075}
   m_LocalPosition: {x: -0.02, y: 0.73, z: -5.98}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
