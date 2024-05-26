@@ -125,6 +125,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""CombatState"",
+                    ""type"": ""Button"",
+                    ""id"": ""5c5d14ca-4e3a-4a83-8de0-ee92e9fde0b7"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -402,6 +411,28 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""UtilityUse"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""156bd021-fca9-4df1-a821-aeb8cbb7a503"",
+                    ""path"": ""<Gamepad>/dpad/left"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CombatState"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c809fda9-eff1-4723-9910-a913894117c4"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CombatState"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -421,6 +452,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_PlayerActions_Interaction = m_PlayerActions.FindAction("Interaction", throwIfNotFound: true);
         m_PlayerActions_Crouch = m_PlayerActions.FindAction("Crouch", throwIfNotFound: true);
         m_PlayerActions_UtilityUse = m_PlayerActions.FindAction("UtilityUse", throwIfNotFound: true);
+        m_PlayerActions_CombatState = m_PlayerActions.FindAction("CombatState", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -493,6 +525,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_PlayerActions_Interaction;
     private readonly InputAction m_PlayerActions_Crouch;
     private readonly InputAction m_PlayerActions_UtilityUse;
+    private readonly InputAction m_PlayerActions_CombatState;
     public struct PlayerActionsActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -508,6 +541,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         public InputAction @Interaction => m_Wrapper.m_PlayerActions_Interaction;
         public InputAction @Crouch => m_Wrapper.m_PlayerActions_Crouch;
         public InputAction @UtilityUse => m_Wrapper.m_PlayerActions_UtilityUse;
+        public InputAction @CombatState => m_Wrapper.m_PlayerActions_CombatState;
         public InputActionMap Get() { return m_Wrapper.m_PlayerActions; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -550,6 +584,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @UtilityUse.started += instance.OnUtilityUse;
             @UtilityUse.performed += instance.OnUtilityUse;
             @UtilityUse.canceled += instance.OnUtilityUse;
+            @CombatState.started += instance.OnCombatState;
+            @CombatState.performed += instance.OnCombatState;
+            @CombatState.canceled += instance.OnCombatState;
         }
 
         private void UnregisterCallbacks(IPlayerActionsActions instance)
@@ -587,6 +624,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @UtilityUse.started -= instance.OnUtilityUse;
             @UtilityUse.performed -= instance.OnUtilityUse;
             @UtilityUse.canceled -= instance.OnUtilityUse;
+            @CombatState.started -= instance.OnCombatState;
+            @CombatState.performed -= instance.OnCombatState;
+            @CombatState.canceled -= instance.OnCombatState;
         }
 
         public void RemoveCallbacks(IPlayerActionsActions instance)
@@ -617,5 +657,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         void OnInteraction(InputAction.CallbackContext context);
         void OnCrouch(InputAction.CallbackContext context);
         void OnUtilityUse(InputAction.CallbackContext context);
+        void OnCombatState(InputAction.CallbackContext context);
     }
 }

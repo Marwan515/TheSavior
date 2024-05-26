@@ -1,18 +1,20 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    [Header("Movement Speed")]
+    [Header("Movement")]
     [SerializeField] float playerSpeed = 1.0f;
     [SerializeField] float sprintMultiplier = 2.0f;
     private bool sprinting = false;
-    // movement var to use this in the FixedUpdate method
     private Vector2 moveInput;
     // the 3 variables below are used to check if player object is colliding with ground
     [Header("Grounded Check")]
-    [SerializeField] Vector3 boxSize;
-    [SerializeField] float maxDistance;
+    //[SerializeField] Vector3 boxSize;
+    [SerializeField] float groundCheckDistance = 0.2f;
+    //[SerializeField] float maxDistance;
+    [SerializeField] float gravityScale = 2.0f;
     [SerializeField] LayerMask layerMask;
     // keep count of jumps
     [Header("Jump Parameters")]
@@ -51,8 +53,8 @@ public class PlayerController : MonoBehaviour
         playerInputs.PlayerActions.Enable();
         playerInputs.PlayerActions.Movement.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
         playerInputs.PlayerActions.Movement.canceled += _ => HandleMovement(Vector2.zero);
-        playerInputs.PlayerActions.Sprint.started += ctx => sprinting = true;
-        playerInputs.PlayerActions.Sprint.canceled += ctx => sprinting = false;
+        playerInputs.PlayerActions.Sprint.started += _ => sprinting = true;
+        playerInputs.PlayerActions.Sprint.canceled += _ => sprinting = false;
         playerInputs.PlayerActions.Jump.performed += _ => hasJumped = true;
         playerInputs.PlayerActions.Crouch.performed += _ => HandleCrouch();
         playerInputs.PlayerActions.Dodge.performed += _ => HandleDashing();
@@ -62,19 +64,13 @@ public class PlayerController : MonoBehaviour
         playerInputs.PlayerActions.Disable();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        // change to combat state prototyping
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            bool currentState = anim.GetBool("combatState");
-            anim.SetBool("combatState", !currentState);
-        }
-        isGrounded = GroundCheck();
-    }
 
     private void FixedUpdate() {
+        isGrounded = GroundCheck();
+        if (!isGrounded)
+        {
+            rb.AddForce(Physics.gravity * gravityScale, ForceMode.Acceleration);
+        }
         HandleMovement(moveInput);
         HandleJump();
     }
@@ -82,17 +78,23 @@ public class PlayerController : MonoBehaviour
 
     void HandleMovement(Vector2 direction) {
         Vector3 currentMovementStatus = new Vector3(direction.x, 0, direction.y);
-        float speed = isCrouched ? crouchSpeed : sprinting ? sprintMultiplier : playerSpeed;
+        float speed = sprinting ? sprintMultiplier : playerSpeed;
+        anim.SetFloat("X Axis", direction.x * speed);
+        anim.SetFloat("Z Axis", direction.y * speed);
         if (direction == Vector2.zero) {
             rb.velocity = Vector3.zero;
             moveInput = direction;
         } else {
-            rb.velocity = speed * currentMovementStatus;
+            float maxSpeed = isCrouched ? crouchSpeed : speed;
+            Debug.Log(maxSpeed);
+            rb.velocity = maxSpeed * currentMovementStatus;
         }
+        
 
     }
     public void HandleJump(){
         if (hasJumped) {
+            Debug.Log(isGrounded);
             if (isGrounded)
             {
                 doubleJumpAvailable = false;
@@ -105,9 +107,9 @@ public class PlayerController : MonoBehaviour
 
                 if (!doubleJumpAvailable)
                 {
-                    anim.SetTrigger("jump");
+                    anim.SetTrigger("Jump");
                 } else {
-                    anim.SetTrigger("doubleJump");
+                    anim.SetTrigger("DoubleJump");
                 }
                 rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
                 doubleJumpAvailable = !doubleJumpAvailable;
@@ -120,39 +122,47 @@ public class PlayerController : MonoBehaviour
         isCrouched = !isCrouched;
         if (isCrouched && isGrounded) {
             transform.localScale = new Vector3(transform.localScale.x, crouchYScale, transform.localScale.z);
-            anim.SetBool("isCrouched", true);
+            anim.SetBool("Crouched", true);
         } else {
             transform.localScale = new Vector3(transform.localScale.x, startYScale, transform.localScale.z);
-            anim.SetBool("isCrouched", false);
+            anim.SetBool("Crouched", false);
         }
     }
 
     private void HandleDashing() 
     {
-        if (!isCrouched) {
+        if (isGrounded) {
             if (Time.time - lastDashed < cooldownSec)
             {
                 return;
             }
             lastDashed = Time.time;
-            rb.AddForce(transform.forward * dashSpeed * Time.deltaTime, ForceMode.Impulse);
+            if (moveInput.x > 0) {
+                rb.AddForce(Vector3.right * dashSpeed, ForceMode.Impulse);
+                anim.SetTrigger("DodgeRight");   
+            } else if (moveInput.x < 0) {
+                rb.AddForce(Vector3.left * dashSpeed, ForceMode.Impulse);
+                anim.SetTrigger("DodgeLeft");
+            }
         }
     }
     
-    void OnDrawGizmos() {
+    /*void OnDrawGizmos() {
         Gizmos.color = Color.red;
         Gizmos.DrawCube(transform.position - transform.up * maxDistance, boxSize);
-    }
+    }*/
 
     public bool GroundCheck() 
     {
-        if (Physics.BoxCast(transform.position, boxSize, -transform.up, transform.rotation, maxDistance, layerMask))
+       /* if (Physics.BoxCast(transform.position, boxSize, -transform.up, transform.rotation, maxDistance, layerMask))
         {
             return true;
         } 
         else 
         {
             return false;
-        }
+        }*/
+        return Physics.Raycast(transform.position, Vector3.down, groundCheckDistance, layerMask);
+
     }
 }
