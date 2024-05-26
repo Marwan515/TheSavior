@@ -23,10 +23,16 @@ public class PlayerHealth : MonoBehaviour
         currentHealth -= amount;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
         UpdateHealthBar();
-        anim.SetTrigger("takeDamage");
-        if (currentHealth <= 0) {
-            Die();
+        if (gameObject.tag == "Player") {
+            anim.SetTrigger("hitReaction");
+            if (!anim.GetBool("Combat")) {
+                anim.SetBool("Combat", true);
+            }
+            if (currentHealth <= 0) {
+                Die();
+            }
         }
+        
     }
 
     public void Heal(int amount) {
@@ -36,7 +42,7 @@ public class PlayerHealth : MonoBehaviour
     }
 
     private void Die() {
-        anim.SetBool("death", true);
+        anim.SetTrigger("Death");
     }
 
     private void UpdateHealthBar() {
