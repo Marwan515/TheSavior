@@ -7,12 +7,14 @@ public class Interaction : MonoBehaviour
 {
     private Animal currentAnimal;
     private MainCharacter character;
+    private UI ui;
 
     public Animal CurrentAnimal => currentAnimal;
 
 
     private void Start()
     {
+        ui = FindAnyObjectByType<UI>();
         character = FindObjectOfType<MainCharacter>();
 
         if (character == null)
@@ -37,7 +39,7 @@ public class Interaction : MonoBehaviour
                         break;
                     case Animal.AnimalState.Aggressive:
                         Debug.Log("Animal is aggressive!");
-                        animal.PlayAggressiveAnimation();
+                        StartCoroutine(HandleAggressiveInteraction(animal));
                         break;
                 }
             }
@@ -49,6 +51,7 @@ public class Interaction : MonoBehaviour
         if(collider.CompareTag("Animal"))
         {
             currentAnimal = null;
+            StopAllCoroutines();
         }
     }
 
@@ -62,6 +65,7 @@ public class Interaction : MonoBehaviour
                 {
                     character.PlayFeedingAnimation();
                     currentAnimal.PlayEatingAnimation();
+                    ui.GainXP(50);
                     StartCoroutine(FeedAnimal());
 
                 }
@@ -72,6 +76,17 @@ public class Interaction : MonoBehaviour
             }
         }
     }
+
+    private IEnumerator HandleAggressiveInteraction(Animal animal)
+    {
+        animal.PlayAggressiveAnimation();
+        while (currentAnimal == animal && currentAnimal.currentState == Animal.AnimalState.Aggressive)
+        {
+            yield return new WaitForSeconds(2f);
+            ui.TakeDamage(50);
+        }
+    }
+
 
     private IEnumerator FeedAnimal()
     {
